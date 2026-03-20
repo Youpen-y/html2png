@@ -1,0 +1,12 @@
+include html2png/**/*.py
+include README.md
+include LICENSE
+include pyproject.toml
+exclude tests/
+exclude .github/
+exclude .gitignore
+exclude .python-version
+exclude uv.lock
+exclude README.zh-CN.md
+recursive-exclude tests *.py *.html *.png
+global-exclude *.pyc __pycache__ .pytest_cache

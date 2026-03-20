@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>示例信息卡</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #fefdfb;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+
+        .card-title {
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 900;
+        }
+
+        .card-subtitle {
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 700;
+        }
+
+        /* Paper texture effect */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            border-radius: 1.5rem;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .accent-border {
+            border-left: 6px solid #5a4a3f;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center px-12 py-16">
+    <div class="max-w-4xl w-full">
+        <!-- Card Container -->
+        <div class="card relative bg-white rounded-3xl p-12 shadow-lg accent-border animate-fade-in-up">
+            <!-- Decorative Header -->
+            <div class="flex items-center gap-3 mb-8 text-[#c17c4a]">
+                <i class="fas fa-quote-left text-4xl opacity-80"></i>
+                <span class="text-2xl font-semibold tracking-wide">知识卡片</span>
+            </div>
+
+            <!-- Main Title -->
+            <h1 class="card-title text-[#3d3020] text-8xl leading-tight mb-8">
+                HTML 转 PNG<br/>转换工具
+            </h1>
+
+            <!-- Subtitle -->
+            <h2 class="card-subtitle text-[#5a4a3f] text-4xl mb-8">
+                基于 Playwright 的高质量截图方案
+            </h2>
+
+            <!-- Divider -->
+            <div class="w-24 h-1 bg-gradient-to-r from-[#c17c4a] to-transparent rounded mb-8"></div>
+
+            <!-- Content -->
+            <div class="text-[#6b5d52] text-3xl leading-relaxed space-y-6">
+                <p>
+                    这是一个简单易用的 HTML 转 PNG 工具，<br/>
+                    支持单文件转换和批量处理。
+                </p>
+
+                <div class="bg-[#f5f3ef] rounded-2xl p-6 mt-8">
+                    <h3 class="font-semibold text-[#3d3020] mb-3">
+                        <i class="fas fa-code mr-2"></i>核心特性
+                    </h3>
+                    <ul class="space-y-2">
+                        <li><i class="fas fa-check text-[#c17c4a] mr-2"></i>高分辨率输出 (3x DPR)</li>
+                        <li><i class="fas fa-check text-[#c17c4a] mr-2"></i>自动网络等待</li>
+                        <li><i class="fas fa-check text-[#c17c4a] mr-2"></i>禁用动画确保一致性</li>
+                        <li><i class="fas fa-check text-[#c17c4a] mr-2"></i>完整页面截图</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="mt-12 pt-6 border-t border-[#e5e0d8] flex items-center justify-between">
+                <span class="text-[#9a8b7d] text-xl">2026-03-17</span>
+                <span class="text-[#9a8b7d] text-xl">#html2png</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,107 @@
+[project]
+name = "html2png"
+version = "0.1.0"
+description = "Universal HTML to Image Converter - Cross-platform CLI tool"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Youpen-y" }
+]
+keywords = ["html", "image", "screenshot", "cli", "converter"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Multimedia :: Graphics :: Graphics Conversion",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "playwright>=1.58.0",
+    "rich>=14.3.3",
+    "typer>=0.24.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.9.0",
+    "pytest>=8.0.0",
+]
+
+[project.scripts]
+html2png = "html2png:main"
+
+[project.urls]
+Homepage = "https://github.com/Youpen-y/html2png"
+Repository = "https://github.com/Youpen-y/html2png"
+Issues = "https://github.com/Youpen-y/html2png/issues"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.9.0",
+    "pytest>=8.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+packages = ["html2png"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["html2png"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "html2png/**/*.py",
+    "README.md",
+    "LICENSE",
+    "pyproject.toml",
+]
+exclude = [
+    ".gitignore",
+    ".python-version",
+    "uv.lock",
+    "README.zh-CN.md",
+    "tests/**",
+    ".github/**",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # Pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "W",   # pycodestyle warnings
+    "UP",  # pyupgrade
+    "SIM", # flake8-simplify
+]
+ignore = [
+    "E501",  # line length (handled by formatter)
+    "B008",  # typer.Option() in defaults (Typer standard pattern)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]  # allow assert in tests
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
