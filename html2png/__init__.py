@@ -399,7 +399,11 @@ def main() -> None:
         console.print(f"html2png v{__version__}")
         sys.exit(0)
 
-    # Delegate to Typer for all other commands (including --help)
+    # Check for --help, -h, or -H and convert to --help for Typer
+    if len(sys.argv) == 2 and sys.argv[1] in ("--help", "-h", "-H"):
+        sys.argv[1] = "--help"
+
+    # Delegate to Typer for all other commands
     app()
 
 

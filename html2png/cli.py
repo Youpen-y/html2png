@@ -51,24 +51,10 @@ def main(
         is_eager=True,
         show_default=False,
     ),
-    help: bool = typer.Option(
-        False,
-        "--help",
-        "-h",
-        "-H",
-        help="Show this message and exit",
-        is_eager=True,
-        show_default=False,
-    ),
 ) -> None:
     """html2png - Universal HTML to Image Converter."""
     if version:
         # Version is handled in __init__.py before Typer processing
-        # This is just for help display
-        raise typer.Exit()
-    if help:
-        # Help is handled in __init__.py before Typer processing
-        # This is just for help display
         raise typer.Exit()
 
 
