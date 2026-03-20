@@ -1,3 +1,5 @@
+<div align="center">
+
 # html2png
 
 [![Python Version](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
@@ -5,9 +7,13 @@
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Development Status](https://img.shields.io/badge/status-beta-yellow.svg)](https://github.com/Youpen-y/html2png)
 
-通用 HTML 转图片转换器 - 跨平台 HTML 转图片命令行工具
+**通用 HTML 转图片转换器**
+
+*跨平台 HTML 转图片命令行工具*
 
 [**English**](README.md) | 中文
+
+</div>
 
 ## 特性
 
