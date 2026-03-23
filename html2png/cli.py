@@ -6,7 +6,6 @@ from pathlib import Path
 
 import typer
 from rich.console import Console
-from rich.progress import BarColumn, Progress, SpinnerColumn, TaskProgressColumn, TextColumn
 from rich.status import Status
 
 from .config import (
@@ -306,7 +305,7 @@ def convert(
     # Progress output (skip if quiet)
     if not quiet:
         status = Status(
-            f"[cyan]Converting:[/cyan] {input} → {output}",
+            f"[cyan]Converting:[/cyan] {input} → [cyan]{output.name}[/cyan]",
             console=console,
             spinner="dots",
         )
@@ -315,17 +314,103 @@ def convert(
             success = convert_html_to_image(input, output, config)
         finally:
             status.stop()
+            console.print()  # Empty line to separate output
     else:
         success = convert_html_to_image(input, output, config)
 
     if success:
         if not quiet:
             size_bytes = output.stat().st_size
-            console.print(f"[green]✓[/green] Success: {output} ({size_bytes:,} bytes)")
+            console.print(f"[green]✓[/green] Success: {output.name} ({size_bytes:,} bytes)")
         raise typer.Exit(0)
     else:
         console.print("[red]✗[/red] Conversion failed")
         raise typer.Exit(1)
+
+
+def _run_batch_conversion_with_progress(
+    files: list[Path],
+    output_dir: Path,
+    config: AppConfig,
+    parallel: int,
+    verbose: bool,
+) -> None:
+    """Run batch conversion with spinner progress output."""
+    results = []
+
+    if parallel > 1:
+        # Parallel processing with progress
+        with ThreadPoolExecutor(max_workers=parallel) as executor:
+            futures = {}
+            for f in files:
+                output = generate_output_path(str(f), output_dir, config.output_format)
+                future = executor.submit(convert_html_to_image, str(f), output, config)
+                futures[future] = (f, output)
+
+            completed = 0
+            for future in as_completed(futures):
+                input_file, output = futures[future]
+                status = Status(
+                    f"[cyan]Converting:[/cyan] {input_file.name} ({completed + 1}/{len(files)})",
+                    console=console,
+                    spinner="dots",
+                )
+                status.start()
+                try:
+                    success = future.result()
+                    results.append(success)
+                    completed += 1
+                    status.stop()
+                    if success:
+                        size_bytes = output.stat().st_size if output.exists() else 0
+                        console.print(
+                            f"[green]✓[/green] Success: {output.name} ({size_bytes:,} bytes) [{completed}/{len(files)}]"
+                        )
+                    else:
+                        console.print(
+                            f"[red]✗[/red] Failed: {input_file.name} [{completed}/{len(files)}]"
+                        )
+                    if verbose and not success:
+                        console.print(f"[yellow]Warning: Failed to convert {input_file}[/yellow]")
+                except Exception as e:
+                    results.append(False)
+                    completed += 1
+                    status.stop()
+                    console.print(f"[red]✗[/red] Error: {input_file.name}: {e}")
+    else:
+        # Sequential processing with progress
+        for i, input_file in enumerate(files, 1):
+            output = generate_output_path(str(input_file), output_dir, config.output_format)
+            status = Status(
+                f"[cyan]Converting:[/cyan] {input_file.name} ({i}/{len(files)})",
+                console=console,
+                spinner="dots",
+            )
+            status.start()
+            try:
+                success = convert_html_to_image(str(input_file), output, config)
+                results.append(success)
+                status.stop()
+                if success:
+                    size_bytes = output.stat().st_size if output.exists() else 0
+                    console.print(
+                        f"[green]✓[/green] Success: {output.name} ({size_bytes:,} bytes) [{i}/{len(files)}]"
+                    )
+                else:
+                    console.print(f"[red]✗[/red] Failed: {input_file.name} [{i}/{len(files)}]")
+            except Exception as e:
+                results.append(False)
+                status.stop()
+                console.print(f"[red]✗[/red] Error: {input_file.name}: {e}")
+
+    # Report summary
+    success_count = sum(results)
+    if not results or all(results):
+        return  # All succeeded
+
+    if success_count < len(results):
+        failed_count = len(results) - success_count
+        console.print(f"\n[yellow]Warning: {failed_count}/{len(results)} file(s) failed[/yellow]")
 
 
 @app.command()
@@ -438,24 +523,16 @@ def batch(
     if dry_run:
         for f in files:
             output = generate_output_path(str(f), output_dir, config.output_format)
-            console.print(f"  {f} → {output}")
+            console.print(f"  {f.name} → [cyan]{output.name}[/cyan]")
         console.print(f"\n[dim]Dry run mode - {len(files)} file(s) would be converted[/dim]")
         raise typer.Exit(0)
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
     if not quiet:
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            BarColumn(),
-            TaskProgressColumn(),
-            console=console,
-        ) as progress:
-            task = progress.add_task("[cyan]Converting...[/cyan]", total=len(files))
-            _run_batch_conversion(files, output_dir, config, parallel, progress, task, verbose)
+        _run_batch_conversion_with_progress(files, output_dir, config, parallel, verbose)
     else:
-        _run_batch_conversion(files, output_dir, config, parallel, None, None, verbose)
+        _run_batch_conversion(files, output_dir, config, parallel, verbose)
 
     if not quiet:
         console.print("\n[green]✓[/green] Batch conversion complete")
@@ -466,11 +543,9 @@ def _run_batch_conversion(
     output_dir: Path,
     config: AppConfig,
     parallel: int,
-    progress: Progress | None,
-    task: int | None,
     verbose: bool,
 ) -> None:
-    """Run the actual batch conversion."""
+    """Run batch conversion without progress output (for quiet mode)."""
     results = []
 
     if parallel > 1:
@@ -487,12 +562,6 @@ def _run_batch_conversion(
                 try:
                     success = future.result()
                     results.append(success)
-                    if progress and task:
-                        progress.update(
-                            task,
-                            advance=1,
-                            description=f"[cyan]Converting:[/cyan] {input_file.name}",
-                        )
                     if verbose and not success:
                         console.print(f"[yellow]Warning: Failed to convert {input_file}[/yellow]")
                 except Exception as e:
@@ -502,14 +571,8 @@ def _run_batch_conversion(
         # Sequential processing
         for input_file in files:
             output = generate_output_path(str(input_file), output_dir, config.output_format)
-            if progress and task:
-                progress.update(task, description=f"[cyan]Converting:[/cyan] {input_file.name}")
-
             success = convert_html_to_image(str(input_file), output, config)
             results.append(success)
-
-            if progress and task:
-                progress.update(task, advance=1)
 
     # Report summary
     success_count = sum(results)

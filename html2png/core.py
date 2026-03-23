@@ -16,7 +16,6 @@ from .config import (
     BrowserEngine,
     ImageFormat,
     InputSource,
-    PageLoadStrategy,
     RenderConfig,
 )
 from .constants import DISABLE_ANIMATIONS_SCRIPT
@@ -33,8 +32,12 @@ def _show_error_suggestions(error_str: str) -> None:
     """
     if "Timeout" in error_str or "timeout" in error_str:
         console.print("\n[yellow]Suggestions:[/yellow]")
-        console.print("  • Increase timeout: [cyan]--timeout[/cyan] or [cyan]-t[/cyan] (e.g., --timeout 60000)")
-        console.print("  • For slow pages, wait for specific element: [cyan]--wait-for[/cyan] selector")
+        console.print(
+            "  • Increase timeout: [cyan]--timeout[/cyan] or [cyan]-t[/cyan] (e.g., --timeout 60000)"
+        )
+        console.print(
+            "  • For slow pages, wait for specific element: [cyan]--wait-for[/cyan] selector"
+        )
         console.print("  • Use viewport-only mode: [cyan]--viewport-only[/cyan]")
         console.print("  • Try a different browser: [cyan]--browser firefox[/cyan]")
     elif "Navigation" in error_str:
@@ -188,14 +191,14 @@ def _convert_with_page(
         return True
 
     except PlaywrightError as e:
-        console.print(f"[red]Browser error:[/red] {e}")
+        console.print(f"\n[red]Browser error:[/red] {e}")
         _show_error_suggestions(str(e))
         return False
     except OSError as e:
-        console.print(f"[red]File error: {e}[/red]")
+        console.print(f"\n[red]File error: {e}[/red]")
         return False
     except Exception as e:
-        console.print(f"[red]Error converting {input_source}: {e}[/red]")
+        console.print(f"\n[red]Error converting {input_source}: {e}[/red]")
         return False
     finally:
         # Cleanup temp file if created
@@ -228,12 +231,12 @@ def convert_html_to_image(
         with browser_context(config.browser, config.render) as (page, _browser):
             return _convert_with_page(page, input_source, output_path, config)
     except PlaywrightError as e:
-        console.print(f"[red]Browser error:[/red] {e}")
+        console.print(f"\n[red]Browser error:[/red] {e}")
         _show_error_suggestions(str(e))
         return False
     except OSError as e:
-        console.print(f"[red]File error: {e}[/red]")
+        console.print(f"\n[red]File error: {e}[/red]")
         return False
     except Exception as e:
-        console.print(f"[red]Error converting {input_source}: {e}[/red]")
+        console.print(f"\n[red]Error converting {input_source}: {e}[/red]")
         return False
