@@ -22,6 +22,15 @@ DISABLE_ANIMATIONS_SCRIPT = """
 }
 """
 
+# Zoom script for scaling page content
+ZOOM_SCRIPT = """
+(zoomLevel) => {
+    const style = document.createElement('style');
+    style.innerHTML = `html { zoom: ${zoomLevel}; }`;
+    document.head.appendChild(style);
+}
+"""
+
 # Config file search paths
 CONFIG_SEARCH_PATHS = [
     ".html2png.toml",

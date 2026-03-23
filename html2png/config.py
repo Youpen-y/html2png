@@ -73,6 +73,7 @@ class RenderConfig:
     wait_for_timeout: int = DEFAULT_TIMEOUT_MS
     wait_strategy: PageLoadStrategy = PageLoadStrategy.DOMCONTENTLOADED
     quality: int | None = None  # For JPEG format only
+    zoom: float = 1.0  # Page zoom level (1.0 = 100%, 2.0 = 200%)
 
 
 @dataclass
@@ -177,6 +178,8 @@ def load_config_file(config_path: Path | None = None) -> AppConfig:
                 console.print(f"[yellow]Warning: Unknown wait strategy: {wait_strategy}[/yellow]")
         if (quality := render_data.get("quality")) is not None:
             config.render.quality = quality
+        if (zoom := render_data.get("zoom")) is not None:
+            config.render.zoom = float(zoom)
 
     # Parse output format
     if fmt := data.get("output_format"):
@@ -231,6 +234,8 @@ def merge_cli_config(config: AppConfig, **overrides) -> AppConfig:
         render_overrides["wait_for_timeout"] = overrides["timeout"]
     if "wait_strategy" in overrides and overrides["wait_strategy"] is not None:
         render_overrides["wait_strategy"] = overrides["wait_strategy"]
+    if "zoom" in overrides and overrides["zoom"] is not None:
+        render_overrides["zoom"] = overrides["zoom"]
 
     if render_overrides:
         result.render = replace(result.render, **render_overrides)

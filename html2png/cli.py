@@ -164,6 +164,14 @@ def convert(
         min=0,
         max=100,
     ),
+    zoom: float = typer.Option(
+        1.0,
+        "--zoom",
+        "-z",
+        help="Page zoom level (e.g., 1.5 = 150%, 2.0 = 200%)",
+        min=0.1,
+        max=10.0,
+    ),
     # Format and browser
     format: ImageFormat | None = typer.Option(
         None,
@@ -273,6 +281,7 @@ def convert(
         wait_for=wait_for,
         timeout=timeout,
         wait_strategy=wait_strategy,
+        zoom=zoom,
     )
 
     # Determine output path
@@ -452,6 +461,13 @@ def batch(
         "--retina",
         help="Use 3x device pixel ratio for high-resolution output",
     ),
+    zoom: float = typer.Option(
+        1.0,
+        "--zoom",
+        help="Page zoom level (e.g., 1.5 = 150%, 2.0 = 200%)",
+        min=0.1,
+        max=10.0,
+    ),
     config_file: Path = typer.Option(
         None,
         "-c",
@@ -508,6 +524,7 @@ def batch(
         width=final_width,
         height=final_height,
         dpr=dpr,
+        zoom=zoom,
     )
 
     # Find matching files (single-pass filtering)

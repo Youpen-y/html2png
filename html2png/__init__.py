@@ -37,8 +37,10 @@ from .config import (
     ImageFormat,
     PageLoadStrategy,
     ViewportConfig,
-    load_config_file as _load_config_file,
     merge_cli_config,
+)
+from .config import (
+    load_config_file as _load_config_file,
 )
 from .constants import (
     DEFAULT_DEVICE_SCALE_FACTOR,
@@ -56,6 +58,7 @@ __version__ = "0.1.0"
 # Simplified Configuration
 # ============================================================================
 
+
 @dataclass
 class Config:
     """Simplified configuration for html2png.
@@ -72,6 +75,7 @@ class Config:
         headless: Run browser in headless mode
         wait_for: CSS selector to wait for before screenshot
         wait_strategy: Page load strategy
+        zoom: Page zoom level (1.0 = 100%, 2.0 = 200%)
     """
 
     width: int = DEFAULT_VIEWPORT_WIDTH
@@ -85,6 +89,7 @@ class Config:
     headless: bool = True
     wait_for: str | None = None
     wait_strategy: PageLoadStrategy | str = PageLoadStrategy.DOMCONTENTLOADED
+    zoom: float = 1.0
 
     def to_app_config(self) -> AppConfig:
         """Convert to internal AppConfig."""
@@ -97,22 +102,22 @@ class Config:
         config.render.wait_for_selector = self.wait_for
         config.render.wait_for_timeout = self.timeout
         config.render.wait_strategy = (
-            self.wait_strategy if isinstance(self.wait_strategy, PageLoadStrategy)
+            self.wait_strategy
+            if isinstance(self.wait_strategy, PageLoadStrategy)
             else PageLoadStrategy(self.wait_strategy)
         )
         config.render.quality = self.quality
+        config.render.zoom = self.zoom
 
         # Set browser (convert string to enum)
         config.browser.engine = (
-            self.browser if isinstance(self.browser, BrowserEngine)
-            else BrowserEngine(self.browser)
+            self.browser if isinstance(self.browser, BrowserEngine) else BrowserEngine(self.browser)
         )
         config.browser.headless = self.headless
 
         # Set format (convert string to enum)
         config.output_format = (
-            self.format if isinstance(self.format, ImageFormat)
-            else ImageFormat(self.format)
+            self.format if isinstance(self.format, ImageFormat) else ImageFormat(self.format)
         )
 
         return config
@@ -121,6 +126,7 @@ class Config:
 # ============================================================================
 # Public API - render() function
 # ============================================================================
+
 
 def render(
     input_source: str,
@@ -137,6 +143,7 @@ def render(
     headless: bool | None = None,
     wait_for: str | None = None,
     wait_strategy: PageLoadStrategy | str | None = None,
+    zoom: float | None = None,
     config: Config | None = None,
 ) -> bool:
     """Render HTML to image.
@@ -159,6 +166,7 @@ def render(
         headless: Run browser in headless mode
         wait_for: CSS selector to wait for before screenshot
         wait_strategy: Page load strategy (PageLoadStrategy enum or string)
+        zoom: Page zoom level (e.g., 1.5 = 150%, 2.0 = 200%)
         config: Optional Config object (keyword arguments override config values)
 
     Returns:
@@ -187,6 +195,10 @@ def render(
         >>> config = html2png.Config(width=1920, height=1080, scale=2.0)
         >>> html2png.render("page.html", "output.png", config=config)
         True
+        >>>
+        >>> # With zoom
+        >>> html2png.render("page.html", "output.png", zoom=1.5)
+        True
     """
     output = Path(output_path)
 
@@ -202,15 +214,9 @@ def render(
     if scale is not None:
         config.scale = scale
     if browser is not None:
-        config.browser = (
-            browser if isinstance(browser, BrowserEngine)
-            else BrowserEngine(browser)
-        )
+        config.browser = browser if isinstance(browser, BrowserEngine) else BrowserEngine(browser)
     if format is not None:
-        config.format = (
-            format if isinstance(format, ImageFormat)
-            else ImageFormat(format)
-        )
+        config.format = format if isinstance(format, ImageFormat) else ImageFormat(format)
     if quality is not None:
         config.quality = quality
     if full_page is not None:
@@ -223,9 +229,12 @@ def render(
         config.wait_for = wait_for
     if wait_strategy is not None:
         config.wait_strategy = (
-            wait_strategy if isinstance(wait_strategy, PageLoadStrategy)
+            wait_strategy
+            if isinstance(wait_strategy, PageLoadStrategy)
             else PageLoadStrategy(wait_strategy)
         )
+    if zoom is not None:
+        config.zoom = zoom
 
     # Ensure output directory exists
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -237,6 +246,7 @@ def render(
 # ============================================================================
 # Public API - Renderer context manager
 # ============================================================================
+
 
 class Renderer:
     """Browser renderer with context management for batch processing.
@@ -268,6 +278,7 @@ class Renderer:
         headless: bool = True,
         wait_for: str | None = None,
         wait_strategy: PageLoadStrategy | str = PageLoadStrategy.DOMCONTENTLOADED,
+        zoom: float = 1.0,
     ):
         """Initialize the Renderer.
 
@@ -283,6 +294,7 @@ class Renderer:
             headless: Run browser in headless mode
             wait_for: CSS selector to wait for
             wait_strategy: Page load strategy (PageLoadStrategy enum or string)
+            zoom: Page zoom level (1.0 = 100%, 2.0 = 200%)
         """
         self._config = Config(
             width=width,
@@ -295,7 +307,10 @@ class Renderer:
             timeout=timeout,
             headless=headless,
             wait_for=wait_for,
-            wait_strategy=wait_strategy if isinstance(wait_strategy, PageLoadStrategy) else PageLoadStrategy(wait_strategy),
+            wait_strategy=wait_strategy
+            if isinstance(wait_strategy, PageLoadStrategy)
+            else PageLoadStrategy(wait_strategy),
+            zoom=zoom,
         )
         self._app_config = self._config.to_app_config()
         # These will be set in __enter__
@@ -349,17 +364,20 @@ class Renderer:
             app_config = merge_cli_config(app_config, timeout=timeout)
 
         from .core import _convert_with_page
+
         return _convert_with_page(self._page, input_source, output, app_config)
 
     def __enter__(self) -> Self:
         """Enter the context manager and initialize browser."""
         from playwright.sync_api import sync_playwright
+
         from .core import get_browser_type
 
         self._playwright = sync_playwright().start()
         # Convert browser to enum if it's a string
         browser_engine = (
-            self._config.browser if isinstance(self._config.browser, BrowserEngine)
+            self._config.browser
+            if isinstance(self._config.browser, BrowserEngine)
             else BrowserEngine(self._config.browser)
         )
         browser_type = get_browser_type(self._playwright, browser_engine)
@@ -372,13 +390,13 @@ class Renderer:
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         """Exit the context manager and cleanup browser resources."""
-        if hasattr(self, '_page') and self._page is not None:
+        if hasattr(self, "_page") and self._page is not None:
             self._page.close()
             self._page = None
-        if hasattr(self, '_browser') and self._browser is not None:
+        if hasattr(self, "_browser") and self._browser is not None:
             self._browser.close()
             self._browser = None
-        if hasattr(self, '_playwright') and self._playwright is not None:
+        if hasattr(self, "_playwright") and self._playwright is not None:
             self._playwright.stop()
             self._playwright = None
 
@@ -386,6 +404,7 @@ class Renderer:
 # ============================================================================
 # CLI Entry Point
 # ============================================================================
+
 
 def main() -> None:
     """Main entry point for CLI usage."""
@@ -429,6 +448,7 @@ __all__ = [
 # ============================================================================
 # Utility Functions
 # ============================================================================
+
 
 def load_config_file(config_path: str | Path) -> Config:
     """Load configuration from a TOML file.

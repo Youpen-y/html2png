@@ -117,6 +117,7 @@ html2png batch -p "cards/*.html" -o output/ -j 4
 | `--height` | `-H` | Viewport height (overrides --size) |
 | `--scale` | | Device pixel ratio (use --retina for 3x) |
 | `--retina` | | Use 3x device pixel ratio for high-resolution output |
+| `--zoom` | `-z` | Page zoom level (e.g., 1.5 = 150%, 2.0 = 200%) |
 | `--quality` | | JPEG quality (0-100) |
 | `--browser` | `-b` | Browser engine (chromium, firefox, webkit) |
 | `--full-page` | `--viewport-only` | Capture full page (default) or only visible viewport |
@@ -137,6 +138,7 @@ html2png batch -p "cards/*.html" -o output/ -j 4
 | `--parallel` | `-j` | Number of parallel workers (1-16) |
 | `--size` | `-s` | Viewport size preset (mobile, tablet, desktop, etc.) |
 | `--retina` | | Use 3x device pixel ratio for high-resolution output |
+| `--zoom` | | Page zoom level (e.g., 1.5 = 150%, 2.0 = 200%) |
 | `--config` | `-c` | Configuration file path |
 | `--dry-run` | `-n` | Preview mode |
 | `--verbose` | | Verbose output |
@@ -197,6 +199,10 @@ html2png convert page.html -o output.png --size 1920x1080
 
 # Retina quality (3x device pixel ratio)
 html2png convert page.html -o output.png --retina
+
+# Zoom page content (1.5x = 150%, 2.0 = 200%)
+html2png convert page.html -o output.png --zoom 1.5
+html2png convert page.html -o output.png -z 2.0
 
 # Custom dimensions and quality
 html2png convert page.html -o output.jpg --width 1920 --height 1080 --quality 90
@@ -306,6 +312,10 @@ html2png.render("slow-page.html", "output.png", timeout=60000)
 # Use different wait strategy
 html2png.render("page.html", "output.png", wait_strategy="load")
 html2png.render("page.html", "output.png", wait_strategy=PageLoadStrategy.NETWORKIDLE)
+
+# Zoom page content for larger text/elements
+html2png.render("page.html", "output.png", zoom=1.5)  # 150% zoom
+html2png.render("page.html", "output.png", zoom=2.0)  # 200% zoom
 ```
 
 ### Complete render() Parameters
@@ -325,6 +335,7 @@ html2png.render(
     headless=True,                # Run browser in headless mode
     wait_for=".loaded",           # CSS selector to wait for before screenshot
     wait_strategy="load",         # Page load strategy: "commit", "domcontentloaded", "load", "networkidle"
+    zoom=1.5,                     # Page zoom level (1.0 = 100%, 2.0 = 200%)
 )
 ```
 
