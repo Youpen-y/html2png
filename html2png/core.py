@@ -18,7 +18,7 @@ from .config import (
     InputSource,
     RenderConfig,
 )
-from .constants import DISABLE_ANIMATIONS_SCRIPT
+from .constants import DISABLE_ANIMATIONS_SCRIPT, ZOOM_SCRIPT
 from .utils import detect_input_source, path_to_file_url
 
 console = Console()
@@ -176,6 +176,10 @@ def _convert_with_page(
             wait_until=wait_strategy,
             timeout=config.render.wait_for_timeout,
         )
+
+        # Apply zoom if configured
+        if config.render.zoom != 1.0:
+            page.evaluate(ZOOM_SCRIPT, config.render.zoom)
 
         # Wait for specific selector if configured
         if config.render.wait_for_selector:
