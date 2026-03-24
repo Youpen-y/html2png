@@ -476,3 +476,18 @@ if __name__ == "__main__":
     import pytest
 
     pytest.main([__file__, "-v"])
+
+class TestCLI:
+    """Test CLI commands.
+
+    This class tests the command-line interface functionality including:
+    - Basic convert command
+    - Custom options handling
+    - Format conversion (PNG, JPEG)
+    - Preset management
+    - Configuration initialization
+    - Quiet mode operation
+    - Output path inference
+    - Batch processing with dry-run
+    """
+
