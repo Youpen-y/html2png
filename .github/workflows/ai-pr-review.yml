@@ -26,43 +26,53 @@ jobs:
             -H "Accept: application/vnd.github.v3.diff" \
             "${{ github.event.pull_request.url }}" > pr.diff
 
-      - name: Run AI Review (Copilot Style)
+      - name: Install anthropic
+        run: pip3 install anthropic
+
+      - name: Run AI Review
         env:
-          ZHIPU_API_KEY: ${{ secrets.ZHIPU_API_KEY }}
+          ANTHROPIC_AUTH_TOKEN: ${{ secrets.ANTHROPIC_AUTH_TOKEN }}
+          ANTHROPIC_BASE_URL: https://open.bigmodel.cn/api/anthropic
+          ANTHROPIC_DEFAULT_MODEL: glm-4.7
         run: |
-          python << 'EOF'
-          import os, requests
+          python3 << 'EOF'
+          import os
+          import anthropic
 
           diff = open("pr.diff", encoding="utf-8", errors="ignore").read()
 
-          prompt = (
-              "You are an AI code reviewer like GitHub Copilot Review.\n\n"
-              "Task:\n"
-              "- Review ONLY the PR diff.\n"
-              "- Use **bold headings**: **Summary**, **Potential Issues**, **Suggestions**, **LGTM**\n"
-              "- Use bullet lists for points\n"
-              "- Do NOT use # or ## headings\n"
-              "- Place overall LGTM at the bottom\n\n"
-              f"PR diff:\n{diff}"
+          if not diff.strip():
+              print("No diff found, skipping review")
+              exit(0)
+
+          client = anthropic.Anthropic(
+              api_key=os.environ["ANTHROPIC_AUTH_TOKEN"],
+              base_url=os.environ["ANTHROPIC_BASE_URL"],
           )
 
-          resp = requests.post(
-              "https://open.bigmodel.cn/api/paas/v4/chat/completions",
-              headers={
-                  "Authorization": f"Bearer {os.environ['ZHIPU_API_KEY']}",
-                  "Content-Type": "application/json",
-              },
-              json={
-                  "model": "glm-4.7",
-                  "messages": [
-                      {"role": "system", "content": "You are a senior software engineer reviewing a PR."},
-                      {"role": "user", "content": prompt},
-                  ],
-                  "temperature": 0.2,
-              },
+          prompt = f"""You are an AI code reviewer like GitHub Copilot Review.
+
+          Review the following PR diff and provide feedback with these sections:
+          - **Summary**: Brief overview of changes
+          - **Potential Issues**: Any bugs, security issues, or concerns
+          - **Suggestions**: Improvements or best practices
+          - **LGTM**: Overall assessment (LGTM / Needs Changes)
+
+          PR diff:
+          {diff}
+          """
+
+          message = client.messages.create(
+              model=os.environ.get("ANTHROPIC_DEFAULT_MODEL", "glm-4.7"),
+              max_tokens=4096,
+              temperature=0.2,
+              messages=[
+                  {"role": "user", "content": prompt}
+              ],
           )
-          resp.raise_for_status()
-          open("review.md", "w", encoding="utf-8").write(resp.json()["choices"][0]["message"]["content"])
+
+          review = message.content[0].text
+          open("review.md", "w", encoding="utf-8").write(review)
           EOF
 
       - name: Create or update bot comment
@@ -70,8 +80,14 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const body = fs.readFileSync('review.md', 'utf8');
-            const commentBody = '### 🤖 AI PR Review (GLM)\n\n' + body;
+            let body = '';
+            try {
+              body = fs.readFileSync('review.md', 'utf8');
+            } catch (e) {
+              console.log('No review generated');
+              return;
+            }
+            const commentBody = '### 🤖 AI PR Review\n\n' + body;
 
             const comments = await github.rest.issues.listComments({
               owner: context.repo.owner,
