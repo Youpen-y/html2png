@@ -18,6 +18,7 @@ jobs:
           fetch-depth: 0
 
       - name: Fetch PR diff
+        id: diff
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -25,45 +26,31 @@ jobs:
             -H "Authorization: Bearer $GH_TOKEN" \
             -H "Accept: application/vnd.github.v3.diff" \
             "${{ github.event.pull_request.url }}" > pr.diff
+          {
+            echo 'content<<EOF'
+            cat pr.diff
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
 
-      - name: Run AI Review (Copilot Style)
+      - name: Claude Code Action Official
+        uses: anthropics/claude-code-action@v1
         env:
-          ZHIPU_API_KEY: ${{ secrets.ZHIPU_API_KEY }}
-        run: |
-          python << 'EOF'
-          import os, requests
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_BASE_URL: https://open.bigmodel.cn/api/anthropic
+          ANTHROPIC_DEFAULT_MODEL: glm-4.7
+        with:
+          prompt: |
+            You are an AI code reviewer like GitHub Copilot Review.
 
-          diff = open("pr.diff", encoding="utf-8", errors="ignore").read()
+            Review the following PR diff and provide feedback with these sections:
+            - **Summary**: Brief overview of changes
+            - **Potential Issues**: Any bugs, security issues, or concerns
+            - **Suggestions**: Improvements or best practices
+            - **LGTM**: Overall assessment (LGTM / Needs Changes)
 
-          prompt = (
-              "You are an AI code reviewer like GitHub Copilot Review.\n\n"
-              "Task:\n"
-              "- Review ONLY the PR diff.\n"
-              "- Use **bold headings**: **Summary**, **Potential Issues**, **Suggestions**, **LGTM**\n"
-              "- Use bullet lists for points\n"
-              "- Do NOT use # or ## headings\n"
-              "- Place overall LGTM at the bottom\n\n"
-              f"PR diff:\n{diff}"
-          )
-
-          resp = requests.post(
-              "https://open.bigmodel.cn/api/paas/v4/chat/completions",
-              headers={
-                  "Authorization": f"Bearer {os.environ['ZHIPU_API_KEY']}",
-                  "Content-Type": "application/json",
-              },
-              json={
-                  "model": "glm-4.7",
-                  "messages": [
-                      {"role": "system", "content": "You are a senior software engineer reviewing a PR."},
-                      {"role": "user", "content": prompt},
-                  ],
-                  "temperature": 0.2,
-              },
-          )
-          resp.raise_for_status()
-          open("review.md", "w", encoding="utf-8").write(resp.json()["choices"][0]["message"]["content"])
-          EOF
+            PR diff:
+            ${{ steps.diff.outputs.content }}
+          output: review.md
 
       - name: Create or update bot comment
         uses: actions/github-script@v7
