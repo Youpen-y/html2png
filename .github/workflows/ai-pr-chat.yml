@@ -58,12 +58,18 @@ jobs:
       # --------------------------------------------------
       # 3. Generate Copilot-style chat response
       # --------------------------------------------------
+      - name: Install anthropic
+        run: pip3 install anthropic
+
       - name: Generate AI response
         env:
-          ZHIPU_API_KEY: ${{ secrets.ZHIPU_API_KEY }}
+          ANTHROPIC_AUTH_TOKEN: ${{ secrets.ANTHROPIC_AUTH_TOKEN }}
+          ANTHROPIC_BASE_URL: https://open.bigmodel.cn/api/anthropic
+          ANTHROPIC_DEFAULT_MODEL: glm-4.7
         run: |
-          python << 'EOF'
-          import os, requests
+          python3 << 'EOF'
+          import os
+          import anthropic
 
           diff = open("pr.diff", encoding="utf-8", errors="ignore").read()
           question = """${{ github.event.comment.body }}"""
@@ -107,24 +113,21 @@ jobs:
               "User question:\n" + question
           )
 
-          resp = requests.post(
-              "https://open.bigmodel.cn/api/paas/v4/chat/completions",
-              headers={
-                  "Authorization": f"Bearer {os.environ['ZHIPU_API_KEY']}",
-                  "Content-Type": "application/json",
-              },
-              json={
-                  "model": "glm-4.7",
-                  "messages": [
-                      {"role": "system", "content": "You are a senior engineer acting as GitHub Copilot Chat."},
-                      {"role": "user", "content": prompt},
-                  ],
-                  "temperature": 0.3,
-              },
+          client = anthropic.Anthropic(
+              api_key=os.environ["ANTHROPIC_AUTH_TOKEN"],
+              base_url=os.environ["ANTHROPIC_BASE_URL"],
           )
 
-          resp.raise_for_status()
-          content = resp.json()["choices"][0]["message"]["content"]
+          message = client.messages.create(
+              model=os.environ.get("ANTHROPIC_DEFAULT_MODEL", "glm-4.7"),
+              max_tokens=2048,
+              temperature=0.3,
+              messages=[
+                  {"role": "user", "content": prompt}
+              ],
+          )
+
+          content = message.content[0].text
 
           with open("reply.md", "w", encoding="utf-8") as f:
               f.write(content.strip())
