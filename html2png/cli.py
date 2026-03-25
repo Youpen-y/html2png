@@ -150,6 +150,7 @@ def convert(
     scale: float = typer.Option(
         None,
         "--scale",
+        "-sc",
         help="Device pixel ratio (use --retina for 3x, --2x for 2x, etc.)",
     ),
     retina: bool = typer.Option(

@@ -115,7 +115,7 @@ html2png batch -p "cards/*.html" -o output/ -j 4
 | `--size` | `-s` | Viewport size preset (mobile, tablet, desktop, 4k, etc.) |
 | `--width` | `-W` | Viewport width (overrides --size) |
 | `--height` | `-H` | Viewport height (overrides --size) |
-| `--scale` | | Device pixel ratio (use --retina for 3x) |
+| `--scale` | `-sc` | Device pixel ratio (use --retina for 3x) |
 | `--retina` | | Use 3x device pixel ratio for high-resolution output |
 | `--zoom` | `-z` | Page zoom level (e.g., 1.5 = 150%, 2.0 = 200%) |
 | `--quality` | | JPEG quality (0-100) |
