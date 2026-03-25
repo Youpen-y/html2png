@@ -1,6 +1,6 @@
 [project]
 name = "html2png"
-version = "0.1.0"
+version = "0.2.0"
 description = "Universal HTML to Image Converter - Cross-platform CLI tool"
 readme = "README.md"
 requires-python = ">=3.11"

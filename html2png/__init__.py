@@ -51,7 +51,7 @@ from .constants import (
 from .core import convert_html_to_image
 
 # Version - keep in sync with pyproject.toml
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 
 # ============================================================================
