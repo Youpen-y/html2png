@@ -115,8 +115,7 @@ html2png batch -p "cards/*.html" -o output/ -j 4
 | `--size` | `-s` | Viewport size preset (mobile, tablet, desktop, 4k, etc.) |
 | `--width` | `-W` | Viewport width (overrides --size) |
 | `--height` | `-H` | Viewport height (overrides --size) |
-| `--scale` | `-sc` | Device pixel ratio (use --retina for 3x) |
-| `--retina` | | Use 3x device pixel ratio for high-resolution output |
+| `--scale` | `-sc` | Device pixel ratio (default: 3.0) |
 | `--zoom` | `-z` | Page zoom level (e.g., 1.5 = 150%, 2.0 = 200%) |
 | `--quality` | | JPEG quality (0-100) |
 | `--browser` | `-b` | Browser engine (chromium, firefox, webkit) |
@@ -137,7 +136,7 @@ html2png batch -p "cards/*.html" -o output/ -j 4
 | `--format` | `-f` | Output format |
 | `--parallel` | `-j` | Number of parallel workers (1-16) |
 | `--size` | `-s` | Viewport size preset (mobile, tablet, desktop, etc.) |
-| `--retina` | | Use 3x device pixel ratio for high-resolution output |
+| `--scale` | `-sc` | Device pixel ratio (default: 3.0) |
 | `--zoom` | `-z` | Page zoom level (e.g., 1.5 = 150%, 2.0 = 200%) |
 | `--config` | `-c` | Configuration file path |
 | `--dry-run` | `-n` | Preview mode |
@@ -197,8 +196,9 @@ html2png convert page.html -o output.png
 html2png convert page.html -o output.png --size mobile
 html2png convert page.html -o output.png --size 1920x1080
 
-# Retina quality (3x device pixel ratio)
-html2png convert page.html -o output.png --retina
+# Custom device pixel ratio (3x = high resolution)
+html2png convert page.html -o output.png --scale 3
+html2png convert page.html -o output.png -sc 2
 
 # Zoom page content (1.5x = 150%, 2.0 = 200%)
 html2png convert page.html -o output.png --zoom 1.5
