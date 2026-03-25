@@ -118,6 +118,7 @@ html2png batch -p "cards/*.html" -o output/ -j 4
 | `--scale` | | 设备像素比 (使用 --retina 获取 3x) |
 | `--retina` | | 使用 3x 设备像素比实现高清输出 |
 | `--quality` | | JPEG 质量 (0-100) |
+| `--zoom` | `-z` | 页面缩放级别 (例如: 1.5 = 150%, 2.0 = 200%) |
 | `--browser` | `-b` | 浏览器引擎 (chromium, firefox, webkit) |
 | `--full-page` | `--viewport-only` | 截取完整页面 (默认) 或仅可见区域 |
 | `--wait-for` | `-w` | 等待指定 CSS 选择器 |
@@ -137,6 +138,7 @@ html2png batch -p "cards/*.html" -o output/ -j 4
 | `--parallel` | `-j` | 并行 worker 数量 (1-16) |
 | `--size` | `-s` | 视口尺寸预设 (mobile, tablet, desktop 等) |
 | `--retina` | | 使用 3x 设备像素比实现高清输出 |
+| `--zoom` | `-z` | 页面缩放级别 (例如: 1.5 = 150%, 2.0 = 200%) |
 | `--config` | `-c` | 配置文件路径 |
 | `--dry-run` | `-n` | 预览模式 |
 | `--verbose` | | 详细输出 |

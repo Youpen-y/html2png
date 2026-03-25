@@ -464,6 +464,7 @@ def batch(
     zoom: float = typer.Option(
         1.0,
         "--zoom",
+        "-z",
         help="Page zoom level (e.g., 1.5 = 150%, 2.0 = 200%)",
         min=0.1,
         max=10.0,
