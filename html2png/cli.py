@@ -201,7 +201,7 @@ def convert(
         None,
         "--timeout",
         "-t",
-        help="Navigation timeout in milliseconds (default: 30000)",
+        help="Navigation timeout in milliseconds (default: 60000)",
     ),
     wait_strategy: PageLoadStrategy = typer.Option(
         None,
