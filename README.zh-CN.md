@@ -124,7 +124,7 @@ html2png batch -p "cards/*.html" -o output/ -j 4
 | `--wait-strategy` | `-ws` | 页面加载策略 (commit, domcontentloaded, load, networkidle) |
 | `--timeout` | `-t` | 导航超时 (毫秒) |
 | `--config` | `-c` | 配置文件路径 |
-| `--verbose` | | 详细输出 |
+| `--verbose` | `-v` | 详细输出 |
 | `--quiet` | `-q` | 静默模式 (仅显示错误) |
 
 #### batch 命令
@@ -140,7 +140,7 @@ html2png batch -p "cards/*.html" -o output/ -j 4
 | `--zoom` | `-z` | 页面缩放级别 (例如: 1.5 = 150%, 2.0 = 200%) |
 | `--config` | `-c` | 配置文件路径 |
 | `--dry-run` | `-n` | 预览模式 |
-| `--verbose` | | 详细输出 |
+| `--verbose` | `-v` | 详细输出 |
 | `--quiet` | `-q` | 静默模式 (仅显示错误) |
 
 ### 可用命令

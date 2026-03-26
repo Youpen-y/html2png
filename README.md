@@ -124,7 +124,7 @@ html2png batch -p "cards/*.html" -o output/ -j 4
 | `--wait-strategy` | `-ws` | Page load strategy (commit, domcontentloaded, load, networkidle) |
 | `--timeout` | `-t` | Navigation timeout in milliseconds |
 | `--config` | `-c` | Configuration file path |
-| `--verbose` | | Verbose output |
+| `--verbose` | `-v` | Verbose output |
 | `--quiet` | `-q` | Suppress progress output (only show errors) |
 
 #### batch Command
@@ -140,7 +140,7 @@ html2png batch -p "cards/*.html" -o output/ -j 4
 | `--zoom` | `-z` | Page zoom level (e.g., 1.5 = 150%, 2.0 = 200%) |
 | `--config` | `-c` | Configuration file path |
 | `--dry-run` | `-n` | Preview mode |
-| `--verbose` | | Verbose output |
+| `--verbose` | `-v` | Verbose output |
 | `--quiet` | `-q` | Suppress progress output (only show errors) |
 
 ### Available Commands

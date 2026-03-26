@@ -215,6 +215,7 @@ def convert(
     verbose: bool = typer.Option(
         False,
         "--verbose",
+        "-v",
         help="Enable verbose output",
     ),
     quiet: bool = typer.Option(
@@ -479,6 +480,7 @@ def batch(
     verbose: bool = typer.Option(
         False,
         "--verbose",
+        "-v",
         help="Enable verbose output",
     ),
     quiet: bool = typer.Option(
