@@ -115,6 +115,48 @@ def parse_size(size: str | None) -> tuple[int, int] | None:
     return None
 
 
+def resolve_dimensions_and_dpr(
+    size: str | None,
+    width: int | None,
+    height: int | None,
+    dpr: float | None,
+) -> tuple[int | None, int | None, float]:
+    """Resolve viewport dimensions and DPR from CLI options.
+
+    Args:
+        size: Size preset string (e.g., "mobile", "1920x1080")
+        width: Explicit width override
+        height: Explicit height override
+        dpr: Device pixel ratio override
+
+    Returns:
+        Tuple of (width, height, dpr)
+    """
+    final_width = None
+    final_height = None
+    final_dpr = DEFAULT_DEVICE_SCALE_FACTOR
+
+    # Only parse size preset if not explicitly overridden
+    if size and width is None and height is None:
+        parsed = parse_size(size)
+        if parsed:
+            final_width, final_height = parsed
+        else:
+            console.print(f"[yellow]Warning: Invalid size format: {size}[/yellow]")
+
+    # Explicit overrides take precedence
+    if width is not None:
+        final_width = width
+    if height is not None:
+        final_height = height
+
+    # Apply dpr override
+    if dpr is not None:
+        final_dpr = dpr
+
+    return final_width, final_height, final_dpr
+
+
 @app.command()
 def convert(
     input: str = typer.Argument(
@@ -240,28 +282,10 @@ def convert(
     # Load configuration
     config = load_config_file(config_file)
 
-    # Determine dimensions from --size, --width, --height
-    final_dpr = DEFAULT_DEVICE_SCALE_FACTOR
-    final_width = None
-    final_height = None
-
-    # Parse --size option
-    if size:
-        parsed = parse_size(size)
-        if parsed:
-            final_width, final_height = parsed
-        else:
-            console.print(f"[yellow]Warning: Invalid size format: {size}[/yellow]")
-
-    # Override with explicit --width and --height
-    if width is not None:
-        final_width = width
-    if height is not None:
-        final_height = height
-
-    # Determine DPR from --dpr or default
-    if dpr is not None:
-        final_dpr = dpr
+    # Resolve dimensions and DPR from CLI options
+    final_width, final_height, final_dpr = resolve_dimensions_and_dpr(
+        size, width, height, dpr
+    )
 
     # Merge CLI overrides
     config = merge_cli_config(
@@ -534,26 +558,10 @@ def batch(
     """
     config = load_config_file(config_file)
 
-    # Determine dimensions and DPR for merge
-    final_width = None
-    final_height = None
-    final_dpr = DEFAULT_DEVICE_SCALE_FACTOR
-
-    # Apply size preset
-    if size:
-        parsed = parse_size(size)
-        if parsed:
-            final_width, final_height = parsed
-
-    # Override with explicit --width and --height
-    if width is not None:
-        final_width = width
-    if height is not None:
-        final_height = height
-
-    # Apply dpr
-    if dpr is not None:
-        final_dpr = dpr
+    # Resolve dimensions and DPR from CLI options
+    final_width, final_height, final_dpr = resolve_dimensions_and_dpr(
+        size, width, height, dpr
+    )
 
     # Merge CLI overrides (avoids mutating original config)
     config = merge_cli_config(
