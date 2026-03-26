@@ -147,10 +147,10 @@ def convert(
         help="Viewport height (overrides --size)",
     ),
     # Scale/quality options
-    scale: float = typer.Option(
+    dpr: float = typer.Option(
         None,
-        "--scale",
-        "-sc",
+        "--dpr",
+        "-d",
         help="Device pixel ratio (default: 3.0)",
     ),
     quality: int = typer.Option(
@@ -231,7 +231,7 @@ def convert(
         html2png convert https://example.com -o screenshot.png
         cat page.html | html2png convert - -o output.png
         html2png convert page.html --size mobile
-        html2png convert page.html --scale 3
+        html2png convert page.html --dpr 3
         html2png convert page.html -s 1920x1080 -q 90
         html2png convert slow-page.html --timeout 60000
         html2png convert page.html --wait-strategy load
@@ -240,7 +240,7 @@ def convert(
     config = load_config_file(config_file)
 
     # Determine dimensions from --size, --width, --height
-    dpr = DEFAULT_DEVICE_SCALE_FACTOR
+    final_dpr = DEFAULT_DEVICE_SCALE_FACTOR
     final_width = None
     final_height = None
 
@@ -258,9 +258,9 @@ def convert(
     if height is not None:
         final_height = height
 
-    # Determine DPR from --scale or default
-    if scale is not None:
-        dpr = scale
+    # Determine DPR from --dpr or default
+    if dpr is not None:
+        final_dpr = dpr
 
     # Merge CLI overrides
     config = merge_cli_config(
@@ -268,7 +268,7 @@ def convert(
         format=format,
         width=final_width,
         height=final_height,
-        dpr=dpr,
+        dpr=final_dpr,
         quality=quality,
         browser=browser,
         full_page=full_page,
@@ -450,10 +450,10 @@ def batch(
         "-s",
         help='Viewport size (e.g., "1920x1080", "mobile", "desktop")',
     ),
-    scale: float = typer.Option(
+    dpr: float = typer.Option(
         None,
-        "--scale",
-        "-sc",
+        "--dpr",
+        "-d",
         help="Device pixel ratio (default: 3.0)",
     ),
     zoom: float = typer.Option(
@@ -494,14 +494,14 @@ def batch(
         html2png batch --pattern "*.html"
         html2png batch -p "cards/*.html" -o output/ -j 4
         html2png batch -p "*.html" --size mobile
-        html2png batch -p "*.html" --scale 3 -j 4
+        html2png batch -p "*.html" --dpr 3 -j 4
     """
     config = load_config_file(config_file)
 
     # Determine dimensions and DPR for merge
     final_width = None
     final_height = None
-    dpr = DEFAULT_DEVICE_SCALE_FACTOR
+    final_dpr = DEFAULT_DEVICE_SCALE_FACTOR
 
     # Apply size preset
     if size:
@@ -509,9 +509,9 @@ def batch(
         if parsed:
             final_width, final_height = parsed
 
-    # Apply scale
-    if scale is not None:
-        dpr = scale
+    # Apply dpr
+    if dpr is not None:
+        final_dpr = dpr
 
     # Merge CLI overrides (avoids mutating original config)
     config = merge_cli_config(
@@ -519,7 +519,7 @@ def batch(
         format=format,
         width=final_width,
         height=final_height,
-        dpr=dpr,
+        dpr=final_dpr,
         zoom=zoom,
     )
 

@@ -115,7 +115,7 @@ html2png batch -p "cards/*.html" -o output/ -j 4
 | `--size` | `-s` | 视口尺寸预设 (mobile, tablet, desktop, 4k 等) |
 | `--width` | `-W` | 视口宽度 (覆盖 --size) |
 | `--height` | `-H` | 视口高度 (覆盖 --size) |
-| `--scale` | `-sc` | 设备像素比 (默认: 3.0) |
+| `--dpr` | `-d` | 设备像素比 (默认: 3.0) |
 | `--quality` | | JPEG 质量 (0-100) |
 | `--zoom` | `-z` | 页面缩放级别 (例如: 1.5 = 150%, 2.0 = 200%) |
 | `--browser` | `-b` | 浏览器引擎 (chromium, firefox, webkit) |
@@ -136,7 +136,7 @@ html2png batch -p "cards/*.html" -o output/ -j 4
 | `--format` | `-f` | 输出格式 |
 | `--parallel` | `-j` | 并行 worker 数量 (1-16) |
 | `--size` | `-s` | 视口尺寸预设 (mobile, tablet, desktop 等) |
-| `--scale` | `-sc` | 设备像素比 (默认: 3.0) |
+| `--dpr` | `-d` | 设备像素比 (默认: 3.0) |
 | `--zoom` | `-z` | 页面缩放级别 (例如: 1.5 = 150%, 2.0 = 200%) |
 | `--config` | `-c` | 配置文件路径 |
 | `--dry-run` | `-n` | 预览模式 |
@@ -172,7 +172,7 @@ slow_mo = 0
 width = 1080
 height = 1440
 
-device_scale_factor = 3.0
+device_scale_factor = 3.0     # 等同于 CLI 中的 --dpr
 full_page = true
 disable_animations = true
 wait_strategy = "domcontentloaded"
@@ -197,8 +197,8 @@ html2png convert page.html -o output.png --size mobile
 html2png convert page.html -o output.png --size 1920x1080
 
 # 自定义设备像素比 (3x = 高清)
-html2png convert page.html -o output.png --scale 3
-html2png convert page.html -o output.png -sc 2
+html2png convert page.html -o output.png --dpr 3
+html2png convert page.html -o output.png -d 2
 
 # 指定尺寸和质量
 html2png convert page.html -o output.jpg --width 1920 --height 1080 --quality 90
@@ -318,7 +318,7 @@ html2png.render(
     "output.png",                 # output: 输出图片路径
     width=1920,                   # 视口宽度（像素）
     height=1080,                  # 视口高度（像素）
-    scale=2.0,                    # 设备像素比（默认: 3.0）
+    dpr=2.0,                      # 设备像素比（默认: 3.0）
     browser="chromium",           # 浏览器引擎: "chromium", "firefox", "webkit"
     format="jpeg",                # 输出格式: "png" 或 "jpeg"
     quality=90,                   # JPEG 质量 (0-100)，仅对 JPEG 格式有效
@@ -357,7 +357,7 @@ except Exception as e:
 config = html2png.Config(
     width=1920,
     height=1080,
-    scale=2.0,
+    dpr=2.0,
     browser=BrowserEngine.FIREFOX,
     format=ImageFormat.JPEG,
     wait_strategy=PageLoadStrategy.LOAD,

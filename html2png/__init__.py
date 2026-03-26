@@ -16,7 +16,7 @@ Library Usage:
     >>> html2png.render("page.html", "output.png", width=1920, height=1080)
     >>>
     >>> # Using config object
-    >>> config = html2png.Config(width=1920, height=1080, scale=2.0)
+    >>> config = html2png.Config(width=1920, height=1080, dpr=2.0)
     >>> html2png.render("page.html", "output.png", config=config)
     >>>
     >>> # Batch processing (browser reuse)
@@ -66,7 +66,7 @@ class Config:
     Attributes:
         width: Viewport width in pixels
         height: Viewport height in pixels
-        scale: Device pixel ratio (default: 3.0 for retina)
+        dpr: Device pixel ratio (default: 3.0)
         browser: Browser engine to use
         format: Output format
         quality: JPEG quality 0-100 (only for JPEG)
@@ -80,7 +80,7 @@ class Config:
 
     width: int = DEFAULT_VIEWPORT_WIDTH
     height: int = DEFAULT_VIEWPORT_HEIGHT
-    scale: float = DEFAULT_DEVICE_SCALE_FACTOR
+    dpr: float = DEFAULT_DEVICE_SCALE_FACTOR
     browser: BrowserEngine | str = BrowserEngine.CHROMIUM
     format: ImageFormat | str = ImageFormat.PNG
     quality: int | None = None
@@ -97,7 +97,7 @@ class Config:
 
         # Set viewport
         config.render.viewport = ViewportConfig(width=self.width, height=self.height)
-        config.render.device_scale_factor = self.scale
+        config.render.device_scale_factor = self.dpr
         config.render.full_page = self.full_page
         config.render.wait_for_selector = self.wait_for
         config.render.wait_for_timeout = self.timeout
@@ -134,7 +134,7 @@ def render(
     *,
     width: int | None = None,
     height: int | None = None,
-    scale: float | None = None,
+    dpr: float | None = None,
     browser: BrowserEngine | str | None = None,
     format: ImageFormat | str | None = None,
     quality: int | None = None,
@@ -157,7 +157,7 @@ def render(
         output_path: Output image file path
         width: Viewport width in pixels
         height: Viewport height in pixels
-        scale: Device pixel ratio for high-resolution output
+        dpr: Device pixel ratio for high-resolution output
         browser: Browser engine (BrowserEngine enum or string)
         format: Output format (ImageFormat enum or string)
         quality: JPEG quality (0-100), only for JPEG format
@@ -192,7 +192,7 @@ def render(
         True
         >>>
         >>> # Using config object
-        >>> config = html2png.Config(width=1920, height=1080, scale=2.0)
+        >>> config = html2png.Config(width=1920, height=1080, dpr=2.0)
         >>> html2png.render("page.html", "output.png", config=config)
         True
         >>>
@@ -211,8 +211,8 @@ def render(
         config.width = width
     if height is not None:
         config.height = height
-    if scale is not None:
-        config.scale = scale
+    if dpr is not None:
+        config.dpr = dpr
     if browser is not None:
         config.browser = browser if isinstance(browser, BrowserEngine) else BrowserEngine(browser)
     if format is not None:
@@ -269,7 +269,7 @@ class Renderer:
         *,
         width: int = DEFAULT_VIEWPORT_WIDTH,
         height: int = DEFAULT_VIEWPORT_HEIGHT,
-        scale: float = DEFAULT_DEVICE_SCALE_FACTOR,
+        dpr: float = DEFAULT_DEVICE_SCALE_FACTOR,
         browser: BrowserEngine | str = BrowserEngine.CHROMIUM,
         format: ImageFormat | str = ImageFormat.PNG,
         quality: int | None = None,
@@ -285,7 +285,7 @@ class Renderer:
         Args:
             width: Viewport width in pixels
             height: Viewport height in pixels
-            scale: Device pixel ratio
+            dpr: Device pixel ratio
             browser: Browser engine (BrowserEngine enum or string)
             format: Output format (ImageFormat enum or string)
             quality: JPEG quality (0-100)
@@ -299,7 +299,7 @@ class Renderer:
         self._config = Config(
             width=width,
             height=height,
-            scale=scale,
+            dpr=dpr,
             browser=browser if isinstance(browser, BrowserEngine) else BrowserEngine(browser),
             format=format if isinstance(format, ImageFormat) else ImageFormat(format),
             quality=quality,
@@ -384,7 +384,7 @@ class Renderer:
         self._browser = browser_type.launch(headless=self._config.headless)
         self._page = self._browser.new_page(
             viewport={"width": self._config.width, "height": self._config.height},
-            device_scale_factor=self._config.scale,
+            device_scale_factor=self._config.dpr,
         )
         return self
 
@@ -464,7 +464,7 @@ def load_config_file(config_path: str | Path) -> Config:
     return Config(
         width=app_config.render.viewport.width,
         height=app_config.render.viewport.height,
-        scale=app_config.render.device_scale_factor,
+        dpr=app_config.render.device_scale_factor,
         browser=app_config.browser.engine,
         format=app_config.output_format,
         quality=app_config.render.quality,
