@@ -136,6 +136,8 @@ html2png batch -p "cards/*.html" -o output/ -j 4
 | `--format` | `-f` | Output format |
 | `--parallel` | `-j` | Number of parallel workers (1-16) |
 | `--size` | `-s` | Viewport size preset (mobile, tablet, desktop, etc.) |
+| `--width` | `-W` | Viewport width (overrides --size) |
+| `--height` | `-H` | Viewport height (overrides --size) |
 | `--dpr` | `-d` | Device pixel ratio (default: 3.0) |
 | `--zoom` | `-z` | Page zoom level (e.g., 1.5 = 150%, 2.0 = 200%) |
 | `--config` | `-c` | Configuration file path |

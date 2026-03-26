@@ -451,6 +451,18 @@ def batch(
         "-s",
         help='Viewport size (e.g., "1920x1080", "mobile", "desktop")',
     ),
+    width: int = typer.Option(
+        None,
+        "--width",
+        "-W",
+        help="Viewport width (overrides --size)",
+    ),
+    height: int = typer.Option(
+        None,
+        "--height",
+        "-H",
+        help="Viewport height (overrides --size)",
+    ),
     dpr: float = typer.Option(
         None,
         "--dpr",
@@ -497,6 +509,7 @@ def batch(
         html2png batch -p "cards/*.html" -o output/ -j 4
         html2png batch -p "*.html" --size mobile
         html2png batch -p "*.html" --dpr 3 -j 4
+        html2png batch -p "*.html" --width 1920 --height 1080
     """
     config = load_config_file(config_file)
 
@@ -510,6 +523,12 @@ def batch(
         parsed = parse_size(size)
         if parsed:
             final_width, final_height = parsed
+
+    # Override with explicit --width and --height
+    if width is not None:
+        final_width = width
+    if height is not None:
+        final_height = height
 
     # Apply dpr
     if dpr is not None:

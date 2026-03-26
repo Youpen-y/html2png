@@ -136,6 +136,8 @@ html2png batch -p "cards/*.html" -o output/ -j 4
 | `--format` | `-f` | 输出格式 |
 | `--parallel` | `-j` | 并行 worker 数量 (1-16) |
 | `--size` | `-s` | 视口尺寸预设 (mobile, tablet, desktop 等) |
+| `--width` | `-W` | 视口宽度 (覆盖 --size) |
+| `--height` | `-H` | 视口高度 (覆盖 --size) |
 | `--dpr` | `-d` | 设备像素比 (默认: 3.0) |
 | `--zoom` | `-z` | 页面缩放级别 (例如: 1.5 = 150%, 2.0 = 200%) |
 | `--config` | `-c` | 配置文件路径 |
