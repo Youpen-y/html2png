@@ -140,6 +140,9 @@ html2png batch -p "cards/*.html" -o output/ -j 4
 | `--height` | `-H` | Viewport height (overrides --size) |
 | `--dpr` | `-d` | Device pixel ratio (default: 3.0) |
 | `--zoom` | `-z` | Page zoom level (e.g., 1.5 = 150%, 2.0 = 200%) |
+| `--quality` | | JPEG quality (0-100) |
+| `--timeout` | `-t` | Navigation timeout in milliseconds |
+| `--wait-strategy` | `-ws` | Page load strategy (commit, domcontentloaded, load, networkidle) |
 | `--config` | `-c` | Configuration file path |
 | `--dry-run` | `-n` | Preview mode |
 | `--verbose` | `-v` | Verbose output |

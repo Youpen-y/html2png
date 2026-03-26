@@ -477,6 +477,25 @@ def batch(
         min=0.1,
         max=10.0,
     ),
+    quality: int = typer.Option(
+        None,
+        "--quality",
+        help="Image quality for JPEG format (0-100, default: 80)",
+        min=0,
+        max=100,
+    ),
+    timeout: int = typer.Option(
+        None,
+        "--timeout",
+        "-t",
+        help="Navigation timeout in milliseconds (default: 60000)",
+    ),
+    wait_strategy: PageLoadStrategy = typer.Option(
+        None,
+        "--wait-strategy",
+        "-ws",
+        help="Page load strategy: commit, domcontentloaded, load, networkidle (default: domcontentloaded)",
+    ),
     config_file: Path = typer.Option(
         None,
         "-c",
@@ -510,6 +529,8 @@ def batch(
         html2png batch -p "*.html" --size mobile
         html2png batch -p "*.html" --dpr 3 -j 4
         html2png batch -p "*.html" --width 1920 --height 1080
+        html2png batch -p "*.html" --timeout 120000 --wait-strategy load
+        html2png batch -p "*.html" --quality 90 -f jpeg
     """
     config = load_config_file(config_file)
 
@@ -542,6 +563,9 @@ def batch(
         height=final_height,
         dpr=final_dpr,
         zoom=zoom,
+        quality=quality,
+        timeout=timeout,
+        wait_strategy=wait_strategy,
     )
 
     # Find matching files (single-pass filtering)
