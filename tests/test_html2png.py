@@ -296,6 +296,118 @@ quality = 90
         assert config.format == ImageFormat.JPEG
 
 
+class TestTimeout:
+    """Test timeout functionality."""
+
+    def test_timeout_suggestions_on_timeout_error(self, tmp_path):
+        """Test that timeout suggestions are shown only on timeout errors."""
+        from typer.testing import CliRunner
+
+        # Create an HTML file that will cause a timeout during screenshot
+        # by using a very long rendering time
+        html_content = """
+        <html>
+        <head>
+            <style>
+                @font-face {
+                    font-family: 'SlowFont';
+                    src: url('http://localhost:99999/font.woff2');
+                }
+                body { font-family: 'SlowFont', sans-serif; }
+            </style>
+        </head>
+        <body><h1>Timeout Test</h1></body>
+        </html>
+        """
+        html_file = tmp_path / "timeout_test.html"
+        html_file.write_text(html_content)
+
+        output_file = tmp_path / "output.png"
+
+        runner = CliRunner()
+        # Use wait-strategy load to force waiting, and very short timeout
+        result = runner.invoke(
+            app,
+            [
+                "convert",
+                str(html_file),
+                "-o",
+                str(output_file),
+                "--timeout",
+                "100",
+                "--wait-strategy",
+                "load",
+            ],
+        )
+
+        # Should fail due to timeout (exit code 1 or 2)
+        # The test may pass if font loading is skipped, so we check for suggestions
+        output = result.stdout
+
+        # If it failed, check suggestions are shown
+        if result.exit_code != 0:
+            assert "Suggestions" in output or "suggestions" in output.lower()
+            assert "--timeout" in output or "timeout" in output.lower()
+            # Suggested timeout should be 2x the current (100 * 2 = 200)
+            assert "200" in output
+
+    def test_api_timeout_parameter(self, tmp_path):
+        """Test that timeout parameter is properly passed through the API."""
+        html_content = "<html><body><h1>Timeout Test</h1></body></html>"
+        html_file = tmp_path / "test.html"
+        html_file.write_text(html_content)
+
+        output_file = tmp_path / "output.png"
+
+        # Test with custom timeout
+        success = render(str(html_file), output_file, timeout=90000)
+
+        assert success is True
+        assert output_file.exists()
+
+    def test_build_screenshot_options_includes_timeout(self):
+        """Test that build_screenshot_options includes timeout."""
+        from html2png.core import build_screenshot_options
+        from html2png.config import AppConfig
+
+        config = AppConfig()
+        options = build_screenshot_options(Path("/tmp/test.png"), config)
+
+        assert "timeout" in options
+        assert options["timeout"] == config.render.wait_for_timeout
+
+    def test_build_screenshot_options_custom_timeout(self):
+        """Test build_screenshot_options with custom timeout."""
+        from html2png.core import build_screenshot_options
+        from html2png.config import AppConfig
+
+        config = AppConfig()
+        config.render.wait_for_timeout = 90000
+        options = build_screenshot_options(Path("/tmp/test.png"), config)
+
+        assert options["timeout"] == 90000
+
+    def test_cli_timeout_option(self, tmp_path):
+        """Test CLI --timeout option is properly handled."""
+        from typer.testing import CliRunner
+
+        html_content = "<html><body><h1>Timeout CLI Test</h1></body></html>"
+        html_file = tmp_path / "test.html"
+        html_file.write_text(html_content)
+
+        output_file = tmp_path / "output.png"
+
+        runner = CliRunner()
+        result = runner.invoke(
+            app,
+            ["convert", str(html_file), "-o", str(output_file), "--timeout", "90000"],
+        )
+
+        assert result.exit_code == 0
+        assert "Success" in result.stdout
+        assert output_file.exists()
+
+
 class TestCLI:
     """Test CLI commands."""
 

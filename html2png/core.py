@@ -24,16 +24,18 @@ from .utils import detect_input_source, path_to_file_url
 console = Console()
 
 
-def _show_error_suggestions(error_str: str) -> None:
+def _show_error_suggestions(error_str: str, current_timeout: int) -> None:
     """Show helpful suggestions based on error message content.
 
     Args:
         error_str: Error message string to analyze
+        current_timeout: Current timeout value in milliseconds
     """
+    suggested_timeout = current_timeout * 2
     if "Timeout" in error_str or "timeout" in error_str:
         console.print("\n[yellow]Suggestions:[/yellow]")
         console.print(
-            "  • Increase timeout: [cyan]--timeout[/cyan] or [cyan]-t[/cyan] (e.g., --timeout 60000)"
+            f"  • Increase timeout: [cyan]--timeout[/cyan] or [cyan]-t[/cyan] (e.g., --timeout {suggested_timeout})"
         )
         console.print(
             "  • For slow pages, wait for specific element: [cyan]--wait-for[/cyan] selector"
@@ -43,7 +45,7 @@ def _show_error_suggestions(error_str: str) -> None:
     elif "Navigation" in error_str:
         console.print("\n[yellow]Suggestions:[/yellow]")
         console.print("  • Check if the URL is accessible")
-        console.print("  • Try with [cyan]--timeout 60000[/cyan] for slower connections")
+        console.print(f"  • Try with [cyan]--timeout {suggested_timeout}[/cyan] for slower connections")
 
 
 def get_browser_type(playwright_context, engine: BrowserEngine) -> BrowserType:
@@ -69,6 +71,7 @@ def build_screenshot_options(output_path: Path, config: AppConfig) -> dict:
     options = {
         "path": str(output_path),
         "full_page": config.render.full_page,
+        "timeout": config.render.wait_for_timeout,
     }
 
     # Add format-specific options (JPEG supports quality)
@@ -196,7 +199,7 @@ def _convert_with_page(
 
     except PlaywrightError as e:
         console.print(f"\n[red]Browser error:[/red] {e}")
-        _show_error_suggestions(str(e))
+        _show_error_suggestions(str(e), config.render.wait_for_timeout)
         return False
     except OSError as e:
         console.print(f"\n[red]File error: {e}[/red]")
@@ -236,7 +239,7 @@ def convert_html_to_image(
             return _convert_with_page(page, input_source, output_path, config)
     except PlaywrightError as e:
         console.print(f"\n[red]Browser error:[/red] {e}")
-        _show_error_suggestions(str(e))
+        _show_error_suggestions(str(e), config.render.wait_for_timeout)
         return False
     except OSError as e:
         console.print(f"\n[red]File error: {e}[/red]")
