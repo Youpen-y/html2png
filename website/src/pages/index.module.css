@@ -19,8 +19,17 @@
 .tagline span {
   display: inline-block;
   margin-right: 0.25em;
-  opacity: 0;
-  animation: fadeInUp 0.5s ease forwards;
+  opacity: 1;
+  animation: fadeInUp 0.5s ease forwards, shimmer 3s ease-in-out infinite 2s;
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 @keyframes fadeInUp {

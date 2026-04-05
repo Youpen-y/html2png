@@ -112,7 +112,8 @@ export default function Home() {
 
           <section className={styles.installation}>
             <h2>{t.quickStart}</h2>
-            <div className={styles.codeBlock}>uv sync</div>
+            <div className={styles.codeBlock}>git clone https://github.com/Youpen-y/html2png.git</div>
+            <div className={styles.codeBlock}>cd html2png && uv sync</div>
             <div className={styles.codeBlock}>uv run playwright install chromium</div>
             <div className={styles.codeBlock}>uv run html2png convert input.html -o output.png</div>
           </section>
