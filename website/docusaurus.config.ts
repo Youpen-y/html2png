@@ -46,7 +46,7 @@ const config: Config = {
       title: 'html2png',
       logo: {
         alt: 'html2png Logo',
-        src: 'img/logo.svg',
+        src: 'img/icon.png',
       },
       items: [
         {

@@ -28,6 +28,7 @@ Thumbs.db
 tests/output/
 *.png
 !tests/fixtures/*.png
+!website/static/img/*.png
 
 # Website (Docusaurus/Node.js)
 website/node_modules/
