@@ -6,8 +6,8 @@ const config: Config = {
   tagline: 'Universal HTML to Image Converter',
   favicon: 'img/favicon.ico',
 
-  url: 'https://html2png.dev',
-  baseUrl: '/',
+  url: 'https://youpen-y.github.io',
+  baseUrl: '/html2png/',
 
   organizationName: 'Youpen-y',
   projectName: 'html2png',
