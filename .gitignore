@@ -28,3 +28,11 @@ Thumbs.db
 tests/output/
 *.png
 !tests/fixtures/*.png
+
+# Website (Docusaurus/Node.js)
+website/node_modules/
+website/build/
+website/.docusaurus/
+website/*.log
+website/.env*
+website/.cache/
