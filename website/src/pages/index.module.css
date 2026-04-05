@@ -1,0 +1,125 @@
+.hero {
+  padding: 4rem 0 2rem;
+  text-align: center;
+  border-bottom: 1px solid var(--ifm-border-color);
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: var(--ifm-font-weight-bold);
+  margin-bottom: 0.5rem;
+}
+
+.tagline {
+  font-size: 1.5rem;
+  color: var(--ifm-color-emphasis-600);
+  margin-bottom: 0.5rem;
+}
+
+.tagline span {
+  display: inline-block;
+  margin-right: 0.25em;
+  opacity: 0;
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.description {
+  font-size: 1.1rem;
+  color: var(--ifm-color-emphasis-700);
+  margin-bottom: 2rem;
+}
+
+.buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.main {
+  padding: 3rem 0;
+}
+
+.features {
+  margin-bottom: 4rem;
+}
+
+.features .row {
+  margin-bottom: 1.5rem;
+}
+
+.featureCard {
+  height: 100%;
+  padding: 1.5rem;
+  border: 1px solid var(--ifm-border-color);
+  border-radius: var(--ifm-global-radius);
+  background-color: var(--ifm-background-color);
+  transition: border-color 0.2s ease;
+}
+
+.featureCard:hover {
+  border-color: var(--ifm-color-primary);
+}
+
+.featureCard h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
+  color: var(--ifm-color-emphasis-900);
+}
+
+.featureCard p {
+  font-size: 0.95rem;
+  color: var(--ifm-color-emphasis-600);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.installation {
+  padding: 2rem;
+  margin-top: -2rem;
+  background-color: var(--ifm-color-emphasis-50);
+  border-radius: var(--ifm-global-radius);
+}
+
+.installation h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.codeBlock {
+  background-color: var(--ifm-background-surface-color);
+  border: 1px solid var(--ifm-border-color);
+  border-radius: var(--ifm-global-radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.9rem;
+  color: var(--ifm-color-emphasis-900);
+  overflow-x: auto;
+}
+
+@media (max-width: 996px) {
+  .title {
+    font-size: 2rem;
+  }
+
+  .tagline {
+    font-size: 1.2rem;
+  }
+
+  .features .row {
+    margin-bottom: 0;
+  }
+}
