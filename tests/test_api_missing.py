@@ -6,6 +6,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import pytest
+
 from html2png import BrowserEngine, Config, ImageFormat, PageLoadStrategy, Renderer, render
 
 
@@ -237,7 +238,9 @@ class TestRendererParameters:
 
         with Renderer(width=800, height=600) as r:
             # Override wait_for for this specific render
-            success = r.render(str(html_file), output_file, wait_for=".dynamic-content", timeout=2000)
+            success = r.render(
+                str(html_file), output_file, wait_for=".dynamic-content", timeout=2000
+            )
 
         assert success is True
         assert output_file.exists()
