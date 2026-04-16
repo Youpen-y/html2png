@@ -283,9 +283,7 @@ def convert(
     config = load_config_file(config_file)
 
     # Resolve dimensions and DPR from CLI options
-    final_width, final_height, final_dpr = resolve_dimensions_and_dpr(
-        size, width, height, dpr
-    )
+    final_width, final_height, final_dpr = resolve_dimensions_and_dpr(size, width, height, dpr)
 
     # Merge CLI overrides
     config = merge_cli_config(
@@ -559,9 +557,7 @@ def batch(
     config = load_config_file(config_file)
 
     # Resolve dimensions and DPR from CLI options
-    final_width, final_height, final_dpr = resolve_dimensions_and_dpr(
-        size, width, height, dpr
-    )
+    final_width, final_height, final_dpr = resolve_dimensions_and_dpr(size, width, height, dpr)
 
     # Merge CLI overrides (avoids mutating original config)
     config = merge_cli_config(

@@ -6,6 +6,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Import internal modules for testing internal functionality
+# Import public API
+import html2png
+from html2png import Config, Renderer, load_config_file, render
+
+# Import CLI app for testing
+from html2png.cli import app
 from html2png.config import (
     AppConfig,
     BrowserConfig,
@@ -16,13 +22,6 @@ from html2png.config import (
     ViewportConfig,
 )
 from html2png.utils import detect_input_source, path_to_file_url
-
-# Import public API
-import html2png
-from html2png import Config, Renderer, render, load_config_file
-
-# Import CLI app for testing
-from html2png.cli import app
 
 
 class TestInputDetection:
@@ -367,8 +366,8 @@ class TestTimeout:
 
     def test_build_screenshot_options_includes_timeout(self):
         """Test that build_screenshot_options includes timeout."""
-        from html2png.core import build_screenshot_options
         from html2png.config import AppConfig
+        from html2png.core import build_screenshot_options
 
         config = AppConfig()
         options = build_screenshot_options(Path("/tmp/test.png"), config)
@@ -378,8 +377,8 @@ class TestTimeout:
 
     def test_build_screenshot_options_custom_timeout(self):
         """Test build_screenshot_options with custom timeout."""
-        from html2png.core import build_screenshot_options
         from html2png.config import AppConfig
+        from html2png.core import build_screenshot_options
 
         config = AppConfig()
         config.render.wait_for_timeout = 90000
@@ -515,9 +514,7 @@ class TestCLI:
         output_file = tmp_path / "output.png"
 
         runner = CliRunner()
-        result = runner.invoke(
-            app, ["convert", str(html_file), "-o", str(output_file), "-q"]
-        )
+        result = runner.invoke(app, ["convert", str(html_file), "-o", str(output_file), "-q"])
 
         assert result.exit_code == 0
         # Quiet mode should only show errors
@@ -526,8 +523,9 @@ class TestCLI:
 
     def test_convert_missing_output_infers_from_input(self, tmp_path):
         """Test that output format is inferred from input when not specified."""
-        from typer.testing import CliRunner
         import os
+
+        from typer.testing import CliRunner
 
         # Change to temp directory to avoid polluting project root
         original_cwd = os.getcwd()
@@ -555,6 +553,7 @@ class TestCLI:
     def test_batch_dry_run(self, tmp_path):
         """Test batch command with dry-run mode."""
         import os
+
         from typer.testing import CliRunner
 
         # Create some test HTML files

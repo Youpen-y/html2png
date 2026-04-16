@@ -45,7 +45,9 @@ def _show_error_suggestions(error_str: str, current_timeout: int) -> None:
     elif "Navigation" in error_str:
         console.print("\n[yellow]Suggestions:[/yellow]")
         console.print("  • Check if the URL is accessible")
-        console.print(f"  • Try with [cyan]--timeout {suggested_timeout}[/cyan] for slower connections")
+        console.print(
+            f"  • Try with [cyan]--timeout {suggested_timeout}[/cyan] for slower connections"
+        )
 
 
 def get_browser_type(playwright_context, engine: BrowserEngine) -> BrowserType:
