@@ -114,7 +114,7 @@ class TestPublicAPI:
             output_file,
             width=800,
             height=600,
-            scale=2.0,
+            dpr=2.0,
         )
 
         assert success is True
@@ -148,11 +148,11 @@ class TestPublicAPI:
 
     def test_config_dataclass(self):
         """Test Config dataclass."""
-        config = Config(width=1920, height=1080, scale=2.0)
+        config = Config(width=1920, height=1080, dpr=2.0)
 
         assert config.width == 1920
         assert config.height == 1080
-        assert config.scale == 2.0
+        assert config.dpr == 2.0
         assert config.browser == BrowserEngine.CHROMIUM
         assert config.format == ImageFormat.PNG
 
@@ -180,7 +180,7 @@ class TestPublicAPI:
 
         output_file = tmp_path / "output.png"
 
-        config = Config(width=800, height=600, scale=1.0)
+        config = Config(width=800, height=600, dpr=1.0)
         success = render(str(html_file), output_file, config=config)
 
         assert success is True
@@ -285,7 +285,7 @@ quality = 90
 
         assert config.width == 1920
         assert config.height == 1080
-        assert config.scale == 2.0
+        assert config.dpr == 2.0
         assert config.full_page is False
         assert config.wait_strategy == PageLoadStrategy.LOAD
         assert config.timeout == 60000
@@ -449,7 +449,7 @@ class TestCLI:
                 "800",
                 "--height",
                 "600",
-                "--scale",
+                "--dpr",
                 "2.0",
             ],
         )

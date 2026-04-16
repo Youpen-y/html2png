@@ -128,7 +128,7 @@ class TestRenderParameters:
             output_file,
             width=1920,
             height=1080,
-            scale=2.0,
+            dpr=2.0,
             browser="chromium",
             format="jpeg",
             quality=85,
@@ -254,7 +254,7 @@ class TestConfigEdgeCases:
         config = Config(
             width=1920,
             height=1080,
-            scale=2.5,
+            dpr=2.5,
             browser=BrowserEngine.WEBKIT,
             format=ImageFormat.JPEG,
             quality=95,
@@ -267,7 +267,7 @@ class TestConfigEdgeCases:
 
         assert config.width == 1920
         assert config.height == 1080
-        assert config.scale == 2.5
+        assert config.dpr == 2.5
         assert config.browser == BrowserEngine.WEBKIT
         assert config.format == ImageFormat.JPEG
         assert config.quality == 95
