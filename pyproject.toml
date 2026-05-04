@@ -23,7 +23,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "playwright>=1.58.0",
+    "playwright>=1.59.0",
     "rich>=14.3.4",
     "typer>=0.24.1",
 ]
