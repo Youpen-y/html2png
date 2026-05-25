@@ -30,7 +30,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "ruff>=0.15.10",
+    "ruff>=0.15.14",
     "pytest>=8.4.2",
 ]
 
@@ -44,7 +44,7 @@ Issues = "https://github.com/Youpen-y/html2png/issues"
 
 [dependency-groups]
 dev = [
-    "ruff>=0.15.10",
+    "ruff>=0.15.14",
     "pytest>=8.4.2",
 ]
 
